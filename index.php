@@ -1,26 +1,46 @@
 <?php
-// index.php
-// Aplicación PHP sencilla que consume la API pública de clima de Open-Meteo
-// Coordenadas por defecto (San José, Costa Rica)
+function httpGet($url) {
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+    curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+
+    $response = curl_exec($curl);
+
+    if (curl_errno($curl)) {
+        $error = curl_error($curl);
+        curl_close($curl);
+        return ["error" => $error];
+    }
+
+    curl_close($curl);
+    return ["response" => $response];
+}
+
 $defaultLat = "9.9281";
 $defaultLon = "-84.0907";
 
-// Si el usuario envía otras coordenadas
 $lat = isset($_GET['lat']) ? $_GET['lat'] : $defaultLat;
 $lon = isset($_GET['lon']) ? $_GET['lon'] : $defaultLon;
 
-// URL de API
-$apiUrl = "https://api.openmeteo.com/v1/forecast?latitude={$lat}&longitude={$lon}&current_weather=true";
 
-// Consumir API
-$responseJson = @file_get_contents($apiUrl);
-$data = null;
+$apiUrl = "https://api.open-meteo.com/v1/forecast?latitude={$lat}&longitude={$lon}&current_weather=true";
+
+$result = httpGet($apiUrl);
+
 $error = null;
+$data = null;
 
-if ($responseJson === FALSE) {
-    $error = "No se pudo conectar con la API de clima.";
-} else {
+
+if (isset($result["error"])) {
+    $error = "No se pudo conectar con la API: " . $result["error"];
+}
+elseif (isset($result["response"])) {
+    $responseJson = $result["response"];
+
     $data = json_decode($responseJson, true);
+
     if ($data === null) {
         $error = "Error al decodificar JSON.";
     }

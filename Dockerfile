@@ -1,7 +1,7 @@
 FROM php:8.2-apache
 
-COPY index.php /var/www/html/index.php
+RUN apt-get update && apt-get install -y ca-certificates curl && update-ca-certificates
 
-RUN a2enmod rewrite
+COPY index.php /var/www/html/index.php
 
 EXPOSE 80

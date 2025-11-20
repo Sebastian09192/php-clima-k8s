@@ -40,3 +40,7 @@ kubectl get service php-clima-service
 
 ## Abrir en navegador
 http://localhost:30080
+
+
+
+(Codigo Modificadisimo por Sebastian por que el otro no me funciono xD)

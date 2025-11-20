@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: php-clima-container
-        image: php-clima-api:v1
+        image: php-clima-api:v3
         ports:
         - containerPort: 80
 ---
